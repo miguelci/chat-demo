@@ -1,7 +1,5 @@
 <?php
 
-use App\Events\MessagePosted;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,32 +15,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/chat', function () {
-    return view('chat');
-})->middleware('auth');;
+Route::get('/chat', 'ChatController@index');
 
-Route::get('/messages', function(){
-  return App\Message::with('user')->get();
-})->middleware('auth');
+Route::get('/messages', 'MessageController@index');
 
-Route::post('/messages', function(){
-
-  $user = Auth::user();
-  $message = request()->get('message');
-
-
-  $message = $user->messages()->create([
-    'message' => request()->get('message')
-  ]);
-
-  // Annouce that a new message has been posted
-  broadcast(new MessagePosted($message, $user))->toOthers();
-
-
-  return ['status' => 'OK'];
-  
-})->middleware('auth');
-
+Route::post('/messages', 'MessageController@create');
 
 Auth::routes();
 
